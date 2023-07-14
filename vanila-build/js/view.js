@@ -47,7 +47,7 @@ export default class View {
   }
   handlerPlayerMove(squareEl, player) {
     const SQUARE_ICON = document.createElement("i");
-    // TODO: iconClass not working(you can find err in console) expected: after click on box icon shows on box(X or O)
+    // TODO: iconClass not working(you can find err in console) expected: after click on box icon shows on box(X or O)----------------------------------------------------------
     SQUARE_ICON.classList.add("fa-solid", player.iconClass, player.colorClass);
     squareEl.replaceChildren(SQUARE_ICON);
   }
