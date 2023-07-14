@@ -1,0 +1,231 @@
+:root {
+  --dark-grey: #1a2a32;
+  --grey: #2e4756;
+  --turquoise: #3cc4bf;
+  --yellow: #f2b147;
+  --light-dark: #d3d3d3;
+}
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  border: none;
+}
+html,
+body {
+  height: 100%;
+  background-color: var(--dark-grey);
+  font-size: 62.5%;
+}
+body {
+  padding: 9rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+/* Utility classes */
+.hidden {
+  display: none;
+}
+.active {
+  display: inline-block;
+}
+.shadow {
+  box-shadow: 10px 10px 5px rgb(27, 26, 26);
+}
+.yellow {
+  color: var(--yellow);
+}
+.turquoise {
+  color: var(--turquoise);
+}
+.border {
+  border: 1px solid rgba(211, 211, 211, 0.4);
+}
+/* Main */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 8rem);
+  grid-template-rows: 5rem repeat(3, 8rem) 6rem;
+  gap: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+  .grid {
+    width: 49rem;
+    grid-template-columns: repeat(3, 15rem);
+    grid-template-rows: 5rem repeat(3, 15rem) 6rem;
+    gap: 2rem;
+  }
+}
+
+.turn {
+  background-color: inherit;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+}
+.turn p {
+  animation: 0.6s ease-in-out turn-text-animation;
+}
+@keyframes turn-text-animation {
+  0% {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+  100% {
+    opacity: 100%;
+    transform: translateX(0);
+  }
+}
+.turn i {
+  font-size: 1.5rem;
+  margin: 0 1rem 0 0.5rem;
+  animation: 0.6s ease-in-out turn-icon-animation;
+}
+@keyframes turn-icon-animation {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.menu {
+  position: relative;
+}
+.menu .items {
+  position: absolute;
+  z-index: 10;
+  top: 6rem;
+  right: 0;
+  text-align: start;
+  background-color: black;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+.menu .items button {
+  background-color: transparent;
+  font-size: 1rem;
+  padding: 4px;
+  color: white;
+}
+.menu .items button:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.menu-btn {
+  width: 100%;
+  height: 100%;
+  background-color: var(--grey);
+  color: white;
+  border-radius: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 1.2rem;
+}
+@media screen and (min-width: 768px) {
+  .menu .items button {
+    padding: 0.8rem;
+    font-size: 1.3rem;
+  }
+}
+.square {
+  background-color: var(--grey);
+  border-radius: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+}
+.square:hover {
+  filter: brightness(80%);
+  cursor: pointer;
+}
+.square i.cross {
+  color: var(--turquoise);
+}
+.square i.cyrcle {
+  color: var(--yellow);
+}
+.score {
+  background-color: blue;
+  border-radius: 1rem;
+  font-size: 1.2rem;
+  align-self: center;
+  padding: 1rem 0;
+}
+.score.one {
+  background-color: var(--turquoise);
+}
+.score.two {
+  background-color: rgb(188, 187, 187);
+}
+.score.three {
+  background-color: var(--yellow);
+}
+
+/* Footer */
+footer {
+  margin-top: 3rem;
+  line-height: 2rem;
+  font-size: 1rem;
+  color: white;
+}
+.developer a {
+  color: var(--yellow);
+}
+.refactor a {
+  color: var(--turquoise);
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.modal.hidden {
+  display: none;
+}
+.modal-content {
+  align-items: center;
+  background-color: var(--grey);
+  border-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.1rem;
+  height: 15rem;
+  justify-content: center;
+  width: 25rem;
+  margin: 1rem;
+}
+.modal-content button {
+  background-color: var(--turquoise);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  color: white;
+  font-size: 2rem;
+}
+.modal-content button:hover {
+  cursor: pointer;
+  color: var(--dark-grey);
+}
