@@ -1,3 +1,5 @@
+import Store from "./store.js";
+
 export default class View {
   $ = {};
   $$ = {};
@@ -15,7 +17,7 @@ export default class View {
     this.$.resetBtn = this.#qs('[data-id="reset-btn"]');
     this.$.reloadBtn = this.#qs('[data-id="reload-btn"]');
 
-    this.$.moda = this.#qs('[data-id="modal"]');
+    this.$.modal = this.#qs('[data-id="modal"]');
     this.$.modalContent = this.#qs('[data-id="modal-content"]');
     this.$.modalText = this.#qs('[data-id="modal-text"]');
     this.$.modalBtn = this.#qs('[data-id="modal-btn"]');
@@ -30,33 +32,58 @@ export default class View {
   bindGameResetEvent(handler) {
     this.$.resetBtn.addEventListener("click", handler);
   }
+  bindPlayAgainEvent(handler) {
+    this.$.modalBtn.addEventListener("click", handler);
+  }
   bindNewRoundEvent(handler) {
     this.$.reloadBtn.addEventListener("click", handler);
   }
   bindPlayerMoveEvent(handler) {
     this.$$.square.forEach((square) => {
-      square.addEventListener("click", handler);
+      square.addEventListener("click", () => handler(square));
     });
   }
   // DOMhelper method
+  openModal(message) {
+    this.$.modal.classList.remove("hidden");
+    this.$.modalText.innerText = message;
+  }
+  clearMoves() {
+    this.$$.square.forEach((square) => {
+      square.replaceChildren();
+    });
+  }
+  closeAll() {
+    this.#closeMenu();
+    this.closeModal();
+  }
+  closeModal() {
+    this.$.modal.classList.add("hidden");
+  }
+  #closeMenu() {
+    this.$.menuBtn.classList.toggle("border");
+    this.$.menuItem.classList.toggle("hidden");
+    // this.$.iconDown.classList.toggle("hidden");
+    // this.$.iconUp.classList.toggle("hidden");
+  }
   #toggleMenu() {
     this.$.menuBtn.classList.toggle("border");
     this.$.menuItem.classList.toggle("hidden");
     this.$.iconDown.classList.toggle("hidden");
     this.$.iconUp.classList.toggle("hidden");
   }
-  handlerPlayerMove(squareEl, player) {
+  handlePlayerMove(squareEl, player) {
     const SQUARE_ICON = document.createElement("i");
-    // TODO: iconClass not working(you can find err in console) expected: after click on box icon shows on box(X or O)----------------------------------------------------------
+
     SQUARE_ICON.classList.add("fa-solid", player.iconClass, player.colorClass);
     squareEl.replaceChildren(SQUARE_ICON);
   }
+
   setTurnIndicator(player) {
     const TURN_ICON = document.createElement("i");
     const TURN_LABEL = document.createElement("p");
 
-    TURN_ICON.classList.add(player.colorClass);
-    TURN_ICON.classList.add("fa-solid", player.iconClass);
+    TURN_ICON.classList.add("fa-solid", player.colorClass, player.iconClass);
 
     TURN_LABEL.classList.add(player.colorClass);
     TURN_LABEL.innerHTML = `${player.name}, you are up!`;

@@ -1,20 +1,6 @@
 import Store from "./store.js";
 import View from "./view.js";
 
-const players = [
-  {
-    id: 1,
-    name: "Player 1",
-    iconClass: "fa-x",
-    colorClass: "turquoise",
-  },
-  {
-    id: 2,
-    name: "Player 2",
-    iconClass: "fa-o",
-    colorClass: "yellow",
-  },
-];
 const App = {
   $: {
     iconDown: document.querySelector('[data-id="down"]'),
@@ -138,7 +124,7 @@ const App = {
         // Change Turn text
         App.$.turnText.classList.replace("dsa", "YOu!");
         // Check if there is a winner
-        const GAME = App.getGameStatus(App.state.moves);
+        const GAME = App.getStatus(App.state.moves);
 
         if (GAME.status === "Game End") {
           let message = "";
@@ -157,26 +143,70 @@ const App = {
   },
 };
 
-
+const players = [
+  {
+    id: 1,
+    name: "Player 1",
+    iconClass: "fa-x",
+    colorClass: "turquoise",
+  },
+  {
+    id: 2,
+    name: "Player 2",
+    iconClass: "fa-o",
+    colorClass: "yellow",
+  },
+];
 function init() {
   const view = new View();
   const store = new Store(players);
-
   console.log(store.game);
-  view.bindGameResetEvent((event) => {
-    console.log("game reset");
-    console.log(event);
+
+  view.bindPlayAgainEvent((event) => {
+    view.closeModal();
+
+    store.reset();
+
+    view.clearMoves();
+    view.setTurnIndicator(store.game.CURRENT_PLAYER);
+
+    console.log(store.stats);
   });
+  view.bindGameResetEvent((event) => {
+    view.closeAll();
+
+    store.reset();
+
+    view.clearMoves();
+    view.setTurnIndicator(store.game.CURRENT_PLAYER);
+
+    console.log(store.stats);
+  });
+
   view.bindNewRoundEvent((event) => {
     console.log("new round");
-    console.log(event);
   });
-  view.bindPlayerMoveEvent((event) => {
-    const CLICKED_SQUARE = event.target;
+  view.bindPlayerMoveEvent((square) => {
+    const EXITING_MOVE = store.game.moves.find(
+      (move) => move.squareId === +square.id
+    );
+    if (EXITING_MOVE) {
+      return;
+    }
+    view.handlePlayerMove(square, store.game.CURRENT_PLAYER);
 
-    view.handlerPlayerMove(CLICKED_SQUARE, store.game.CURRENT_PLAYER);
-    store.playerMove.apply(+CLICKED_SQUARE.id)
-    view.setTurnIndicator(store.game.CLICKED_PLAYER);
+    store.playerMove(+square.id);
+
+    if (store.game.status.isComplete) {
+      view.openModal(
+        store.game.status.winner
+          ? `${store.game.status.winner.name} wins!`
+          : "Tie. Lets try again!"
+      );
+      return;
+    }
+
+    view.setTurnIndicator(store.game.CURRENT_PLAYER);
   });
 }
 
