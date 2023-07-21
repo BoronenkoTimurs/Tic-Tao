@@ -5,6 +5,8 @@ export default class View {
   $$ = {};
 
   constructor() {
+    this.$.grid = this.#qs('[data-id="grid"]');
+
     this.$.iconDown = this.#qs('[data-id="down"]');
     this.$.iconUp = this.#qs('[data-id="up"]');
 
@@ -40,11 +42,18 @@ export default class View {
       CURRENT_PLAYER,
       status: { isComplete, winner },
     } = game;
+    this.#closeModal();
+    this.#clearMoves();
     this.#updateScoreboard(
       playerWithStats[0].WINS,
       playerWithStats[1].WINS,
       ties
     );
+    this.#initializeMoves(moves);
+    if (isComplete) {
+      this.#openModal(winner ? `${winner.name} wins!` : "Tie. Lets try again!");
+    }
+    this.#setTurnIndicator(CURRENT_PLAYER);
   }
 
   // Register all the event listeneres
@@ -58,9 +67,7 @@ export default class View {
     this.$.reloadBtn.addEventListener("click", handler);
   }
   bindPlayerMoveEvent(handler) {
-    this.$$.square.forEach((square) => {
-      square.addEventListener("click", () => handler(square));
-    });
+    this.#delegate(this.$.grid, '[data-id="square"]', "click", handler);
   }
   // DOMhelper method
   #updateScoreboard(p1Wins, p2Wins, ties) {
@@ -87,9 +94,8 @@ export default class View {
   #initializeMoves(moves) {
     this.$$.square.forEach((square) => {
       const EXISTING_MOVE = moves.find((move) => move.squareId === +square.id);
-
       if (EXISTING_MOVE) {
-        this.handlePlayerMove(square, EXISTING_MOVE.player);
+        this.#handlePlayerMove(square, EXISTING_MOVE.player);
       }
     });
   }
@@ -132,5 +138,12 @@ export default class View {
     if (!elList) throw new Error("Could not find elements!");
 
     return elList;
+  }
+  #delegate(el, selector, eventKey, handler) {
+    el.addEventListener(eventKey, (event) => {
+      if (event.target.matches(selector)) {
+        handler(event.target);
+      }
+    });
   }
 }

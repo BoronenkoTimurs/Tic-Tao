@@ -6,9 +6,10 @@ const INITIAL_VALUE = {
   },
 };
 
-export default class Store {
+export default class Store extends EventTarget {
   #state = INITIAL_VALUE;
   constructor(key, players) {
+    super();
     this.storageKey = key;
     this.players = players;
   }
@@ -51,7 +52,6 @@ export default class Store {
     let winner = null;
 
     for (const player of this.players) {
-      // TODO: Not working .filter func(fix it))
       const SELECTED_SQUARE_IDS = STATE.currentGameMoves
         .filter((move) => move.player.id === player.id)
         .map((move) => move.squareId);
@@ -121,5 +121,6 @@ export default class Store {
         throw new Error("Invalid argument passed to saveState!");
     }
     window.localStorage.setItem(this.storageKey, JSON.stringify(newState));
+    this.dispatchEvent(new Event('statechange'))
   }
 }
