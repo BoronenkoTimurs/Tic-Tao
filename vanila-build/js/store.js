@@ -8,12 +8,28 @@ const INITIAL_VALUE = {
 
 export default class Store {
   #state = INITIAL_VALUE;
-  constructor(players) {
+  constructor(key, players) {
+    this.storageKey = key;
     this.players = players;
   }
 
   get stats() {
-    console.log(this.#getState());
+    const STATE = this.#getState();
+    return {
+      playerWithStats: this.players.map((player) => {
+        const WINS = STATE.history.currentRoundGame.filter(
+          (game) => game.status.winner?.id === player.id
+        ).length;
+
+        return {
+          ...player,
+          WINS,
+        };
+      }),
+      ties: STATE.history.currentRoundGame.filter(
+        (game) => game.status.winner === null
+      ).length,
+    };
   }
 
   get game() {
@@ -72,13 +88,23 @@ export default class Store {
     if (status.isComplete) {
       STATE_CLONE.history.currentRoundGame.push({ moves, status });
     }
-    STATE_CLONE.currentGameMoves = {};
+    STATE_CLONE.currentGameMoves = [];
 
     this.#saveState(STATE_CLONE);
   }
 
+  newRound() {
+    this.reset();
+
+    const STATE_CLONE = structuredClone(this.#getState());
+    STATE_CLONE.history.allGames.push(...STATE_CLONE.history.currentRoundGame);
+    STATE_CLONE.history.currentRoundGame = [];
+
+    this.#saveState(STATE_CLONE);
+  }
   #getState() {
-    return this.#state;
+    const ITEM = window.localStorage.getItem(this.storageKey);
+    return ITEM ? JSON.parse(ITEM) : INITIAL_VALUE;
   }
   #saveState(stateOrFn) {
     const PREVIOUSE_STATE = this.#getState();
@@ -94,6 +120,6 @@ export default class Store {
       default:
         throw new Error("Invalid argument passed to saveState!");
     }
-    this.#state = newState;
+    window.localStorage.setItem(this.storageKey, JSON.stringify(newState));
   }
 }

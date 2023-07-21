@@ -17,6 +17,10 @@ export default class View {
     this.$.resetBtn = this.#qs('[data-id="reset-btn"]');
     this.$.reloadBtn = this.#qs('[data-id="reload-btn"]');
 
+    this.$.p1Wins = this.#qs('[data-id="p1_wins"]');
+    this.$.p2Wins = this.#qs('[data-id="p2_wins"]');
+    this.$.ties = this.#qs('[data-id="ties"]');
+
     this.$.modal = this.#qs('[data-id="modal"]');
     this.$.modalContent = this.#qs('[data-id="modal-content"]');
     this.$.modalText = this.#qs('[data-id="modal-text"]');
@@ -29,6 +33,21 @@ export default class View {
       this.#toggleMenu();
     });
   }
+  render(game, stats) {
+    const { playerWithStats, ties } = stats;
+    const {
+      moves,
+      CURRENT_PLAYER,
+      status: { isComplete, winner },
+    } = game;
+    this.#updateScoreboard(
+      playerWithStats[0].WINS,
+      playerWithStats[1].WINS,
+      ties
+    );
+  }
+
+  // Register all the event listeneres
   bindGameResetEvent(handler) {
     this.$.resetBtn.addEventListener("click", handler);
   }
@@ -44,42 +63,44 @@ export default class View {
     });
   }
   // DOMhelper method
-  openModal(message) {
+  #updateScoreboard(p1Wins, p2Wins, ties) {
+    this.$.p1Wins.innerText = `${p1Wins} wins`;
+    this.$.p2Wins.innerText = `${p2Wins} wins`;
+    this.$.ties.innerText = `${ties}`;
+  }
+  #openModal(message) {
     this.$.modal.classList.remove("hidden");
     this.$.modalText.innerText = message;
   }
-  clearMoves() {
+  #clearMoves() {
     this.$$.square.forEach((square) => {
       square.replaceChildren();
     });
   }
-  closeAll() {
-    this.#closeMenu();
-    this.closeModal();
-  }
-  closeModal() {
+  #closeModal() {
     this.$.modal.classList.add("hidden");
   }
   #closeMenu() {
     this.$.menuBtn.classList.toggle("border");
     this.$.menuItem.classList.toggle("hidden");
-    // this.$.iconDown.classList.toggle("hidden");
-    // this.$.iconUp.classList.toggle("hidden");
   }
-  #toggleMenu() {
-    this.$.menuBtn.classList.toggle("border");
-    this.$.menuItem.classList.toggle("hidden");
-    this.$.iconDown.classList.toggle("hidden");
-    this.$.iconUp.classList.toggle("hidden");
+  #initializeMoves(moves) {
+    this.$$.square.forEach((square) => {
+      const EXISTING_MOVE = moves.find((move) => move.squareId === +square.id);
+
+      if (EXISTING_MOVE) {
+        this.handlePlayerMove(square, EXISTING_MOVE.player);
+      }
+    });
   }
-  handlePlayerMove(squareEl, player) {
+  #handlePlayerMove(squareEl, player) {
     const SQUARE_ICON = document.createElement("i");
 
     SQUARE_ICON.classList.add("fa-solid", player.iconClass, player.colorClass);
     squareEl.replaceChildren(SQUARE_ICON);
   }
 
-  setTurnIndicator(player) {
+  #setTurnIndicator(player) {
     const TURN_ICON = document.createElement("i");
     const TURN_LABEL = document.createElement("p");
 
@@ -89,6 +110,12 @@ export default class View {
     TURN_LABEL.innerHTML = `${player.name}, you are up!`;
 
     this.$.turn.replaceChildren(TURN_ICON, TURN_LABEL);
+  }
+  #toggleMenu() {
+    this.$.menuBtn.classList.toggle("border");
+    this.$.menuItem.classList.toggle("hidden");
+    this.$.iconDown.classList.toggle("hidden");
+    this.$.iconUp.classList.toggle("hidden");
   }
   #qs(selector, parent) {
     const el = parent
