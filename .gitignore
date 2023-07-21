@@ -1,4 +1,5 @@
 node_modules/
+dist/
 .cache/
 vanile-build/.cache/
 vanila-build/dist/
